@@ -27,13 +27,13 @@ To encode in base 64:
 
   // Create an index to access the base64 alphabet
   size_t idx = 0;
-  for(size_t ii=0;ii < plaintext.length(); ++ii){
+  size_t ii = 0;
+  for(;ii < plaintext.length(); ++ii){
     char current_char = plaintext[ii];
-    switch(ii%3){
+      switch(ii%3){
     case(0):
       // Read the most significant 6 bits in
       idx = (current_char & mask0) >> 2;
-      std::cout << idx << std::endl;
       encoded_text += base64_alpha[idx];
       // Since we have the six most significant bytes, we can overwrite idx
       // with the next 2 bits
@@ -57,6 +57,14 @@ To encode in base 64:
     }
   }
   // Now we need to handle padding
+  
+  size_t rem = ii % 3;
+  if (rem == 0)
+    return;
+  encoded_text += base64_alpha[idx];
+  
+  std::string padding = std::string(3 - rem, '=');
+  encoded_text += padding;
 }
 
 std::string base64::str() {
@@ -77,11 +85,19 @@ std::string hex2ascii(const std::string& str){
 		      
 
 int main(){
+  // Cryptopals Example
   std::string inpt = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d";
   std::string inptAscii = hex2ascii(inpt);
   std::cout << inptAscii << std::endl;
   base64 b64 {inptAscii};
   std::cout << b64.str() << std::endl;
+  // WIKIPEDIA EXAMPLES
+  inptAscii = "leasure.";
+  base64 b64_pad {inptAscii};
+  std::cout << b64_pad.str() << std::endl;
+  inptAscii = "easure.";
+  base64 b64_pad2 {inptAscii};
+  std::cout << b64_pad2.str() << std::endl;
   return 0;
 }
 
